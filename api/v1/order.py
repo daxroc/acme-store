@@ -1,11 +1,12 @@
 import webapp2
-import pprint
 import json
 import logging as log
 
 from google.appengine.ext import ndb
+from google.appengine.api import users
 
-from models import ProductModel
+from models import OrderModel
+from models import CartModel
 
 
 class ListHandler(webapp2.RequestHandler):
@@ -15,7 +16,10 @@ class ListHandler(webapp2.RequestHandler):
 
       self.response.headers['Content-Type'] = 'text/json'
 
-      entities = ProductModel().list()
+      user = users.get_current_user()
+      user_id = user.user_id()
+
+      entities = OrderModel(user_id=user_id).list()
       
       response = {"success": True, "entities":{}}
 
@@ -31,7 +35,7 @@ class ListHandler(webapp2.RequestHandler):
       self.response.write(
         json.dumps({
           "success": False, 
-          "message": "ProductsViewHandler Exception: " + e.message
+          "message": "ViewHandler Exception: " + e.message
       }))
 
 
@@ -42,24 +46,23 @@ class ViewHandler(webapp2.RequestHandler):
 
       self.response.headers['Content-Type'] = 'text/json'
 
-      if not id:
-        self.response.set_status(404)
-        self.response.write("{\"id value missing from url. aborted update.\"}")
-        return
-
-      entity = ProductModel(id=id).get_by_id(int(id))
+      user = users.get_current_user()
+      user_id = user.user_id()
+      
       response = {}
-      response['success'] = True
-      response['entity'] = {
-        'id':               id,
-        'product_id':       entity.product_id,
-        'manufacturer_id':  entity.manufacturer_id,
-        'name':             entity.name,
-        'qty':              entity.qty
-      }
-
-      self.response.set_status(200)
-      self.response.write(json.dumps(response))
+      
+      entity = CartModel(id=user_id).get_by_id(user_id)
+      if "to_dict" in dir(entity):
+        response['success'] = True
+        response['entity'] = entity.to_dict()
+        
+        self.response.set_status(200)
+        self.response.write(json.dumps(response))
+      else:
+        self.response.set_status(404)
+        response['success'] = True
+        response['message'] = "Cart does not exist."
+        self.response.write(json.dumps(response))
 
     except Exception, e: 
       log.debug(e)
@@ -67,57 +70,64 @@ class ViewHandler(webapp2.RequestHandler):
       self.response.write(
         json.dumps({
           "success": False, 
-          "message": "ProductsViewHandler Exception: " + e.message
+          "message": "ViewHandler Exception: " + e.message
       }))
 
 class CreateHandler(webapp2.RequestHandler):
 
+
   def post(self):
+    log.info("create")
     try:
       
+      user = users.get_current_user()
+      user_id = user.user_id()
+
       self.response.headers['Content-Type'] = 'text/json'
 
-      try:
-        jdata = json.loads(self.request.body)
-      except ValueError, e:
-        log.debug(e)
+      cart_entity = CartModel(id=user_id).get_by_id(user_id)
+      log.info(cart_entity)
+      if "to_dict" in dir(cart_entity):
+        new_order = OrderModel(
+          user_id    = user_id,
+          cart  = cart_entity
+        )
+      else:
         self.response.set_status(404)
-        msg = {'success': False, 'message': "Failed to read JSON body"}
-        self.response.write(json.dumps(msg))
+        self.response.write(json.dumps({
+          "message": "Could not place order. No cart Found.",
+          "success": False
+        }))
         return
-    
-      new_product = ProductModel(
-        product_id=jdata['product_id'],
-        manufacturer_id=jdata['manufacturer_id'],
-        name=jdata['name'],
-        qty=jdata['qty'] or 0
-      )
       
-      result = new_product.put()
-      
+      result = new_order.put()
       if result:
         entity = result.get().to_dict()
         entity['success'] = True
         self.response.set_status(201)
         self.response.write(json.dumps(entity))
-
     
+    except users.UserNotFoundError, e:
+      # Should never happen - just incase of solar flares
+      log.debug('User was not found...')
     except Exception, e: 
       log.debug(e)
       self.response.set_status(404)
       self.response.write(
         json.dumps({
           "success": False, 
-          "message": "ProductsCreateHandler Exception: " + e.message
+          "message": "CreateHandler Exception: " + e.message
       }))
-
-
+    
 class UpdateHandler(webapp2.RequestHandler):
 
   def put(self, id):
     try:
 
       self.response.headers['Content-Type'] = 'text/json'
+
+      user = users.get_current_user()
+      user_id = user.user_id()
 
       if not id:
         self.response.set_status(204)
@@ -133,26 +143,22 @@ class UpdateHandler(webapp2.RequestHandler):
         self.response.write(json.dumps(msg))
         return
     
-      entity = ProductModel(id=int(id)).get_by_id(int(id))
+      entity = OrderModel(id=int(id)).get_by_id(int(id))
       
-      entity.product_id           = jdata['product_id']
-      entity.manufacturer_id      = jdata['manufacturer_id']
-      entity.name = jdata['name'] = jdata['name']
-      entity.qty = jdata['name']  = jdata['qty']
-      
+      entity.id        = id 
+      entity.user_id   = user_id
+      entity.cart      = jdata['cart']
+      entity.created   = jdata['created'] 
+
       result = entity.put()
 
       if result:
-        rdata = {}
-        rdata['success'] = True
-        rdata['entity'] = {
-          "product_id":       entity.product_id,
-          "manufacturer_id":  entity.manufacturer_id,
-          "name":             entity.name,
-          "qty":              entity.qty
-        }
+        entity = result.get().to_dict()
+        entity['success'] = True
+
         self.response.set_status(200)
-        self.response.write(json.dumps(rdata))
+        self.response.write(json.dumps(entity))
+
     except AttributeError, e:
       log.debug(e)
       self.response.set_status(204)
@@ -169,7 +175,7 @@ class UpdateHandler(webapp2.RequestHandler):
           "success": False, 
           "message": "ProductsUpdateHandler Exception: " + e.message
       }))
-    
+
 
 class DeleteHandler(webapp2.RequestHandler):
 
@@ -179,15 +185,32 @@ class DeleteHandler(webapp2.RequestHandler):
       self.response.headers['Content-Type'] = 'text/json'
 
       if not id:
-        self.response.set_status(404)
-        self.response.write("{\"id value missing from url. aborted delete.\"}")
+        self.response.set_status(204)
+        self.response.write("{\"id value missing from url. aborted update.\"}")
         return
 
-      try:
+      user = users.get_current_user()
+      user_id = user.user_id()
 
-        entity = ProductModel(id=int(id)).get_by_id(int(id)).key.delete()
-        self.response.set_status(200)
-        self.response.write(json.dumps( {"success": True, "entity": { "id": id } } ))
+      try:
+        error = False
+        entity = OrderModel(id=int(id)).get_by_id(int(id))
+        if "key" in dir(entity):
+          if user_id == entity.user_id:
+            entity.key.delete()
+            self.response.set_status(200)
+            self.response.write(json.dumps( {"success": True, "entity": { "id": user_id } } ))
+          else:
+            error = True
+            msg = "Not authorized to delete this record. Bad user!"    
+        else:
+          error = True
+          msg = "Whahey it's like Jimmy Hoffa, No body... I mean entity found"
+
+        if error:
+          self.response.set_status(200)
+          self.response.write(json.dumps( {"success": False, "message": msg } ))
+
 
       except AttributeError, e:
 
@@ -196,7 +219,7 @@ class DeleteHandler(webapp2.RequestHandler):
         self.response.write(
         json.dumps({
           "success": False, 
-          "message": "ProductsDeleteHandler Exception: " + e.message
+          "message": "DeleteHandler Exception: " + e.message
         }))  
       
     except Exception, e: 
@@ -206,5 +229,5 @@ class DeleteHandler(webapp2.RequestHandler):
       self.response.write(
         json.dumps({
           "success": False, 
-          "message": "ProductsDeleteHandler Exception: " + e.message
+          "message": "DeleteHandler Exception: " + e.message
       }))
