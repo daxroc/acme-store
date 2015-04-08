@@ -1,53 +1,523 @@
-<h2>API Documentation</h2>
+<html>
+  <head>
+    <title>ACME - API Documentation</title>
+  
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+  </head>
 
-<div>
-  <table>
-    
-    <thead>
+  <style>
+    body {margin: 100px;}
+    h3 {margin-top: 100px;}
+  </style>
 
-      <tr>    
-        <th>Entry Point</th>
-        <th>Description</th>
-        <th>URI</th>
-        <th>HTTP Verb</th>
-        <th>Parameters</th>
-        <th>Preconditions</th>      
-      </tr>
-    </thead>
+  <body>
 
-    <tbody>    
-      
-      <tr>
-        <td>Products/</td>
-        <td>Returns json object of products list</td>
-        <td>api/v1/products/</td>
-        <td>GET</td>
-        <td>None</td>
-        <td>None</td>
-      </tr>
-    
-      <tr>
-        <td>Products/view/<id></td>
-        <td>Returns json object of a single product</td>
-        <td>api/v1/products/view/<id></td>
-        <td>GET</td>
-        <td>Requires id parameter appended to the URI</td>
-        <td>None</td>
-      </tr>
-    
-    
-      <tr>
-        <td>Products/create</td>
-        <td>Creates a ProductModel entity from request body json object</td>
-        <td>api/v1/products/</td>
-        <td>PUT</td>
-        <td>request body must contain json object of ProductModel : Example: <pre>{}</pre></td>
-        <td>Authentication</td>
-      </tr>
-    
-    
 
-    </tbody>
+    <h2>ACME - API Documentation</h2>
+    <p>
+      <ul>
+        <li>
+          <a href='#users'>Users</a>
+        </li>
+        <li>
+          <a href='#product'>Product</a>
+        </li>
+        <li>
+          <a href='#manufacture'>Manufacturer</a>
+        </li>
+        <li>
+          <a href='#cart'>Cart</a>
+        </li>
+        <li>
+          <a href='#order'>Orders</a>
+        </li>
+      </ul>
+    </p>
 
-  </table>
-</div>
+    <div>
+      <h3>User</h3>
+      <table class='pure-table pure-table-bordered'>
+        
+        <thead>
+
+          <tr>    
+            <th>Entry Point</th>
+            <th>Description</th>
+            <th>URI</th>
+            <th>METHOD</th>
+            <th>Parameters</th>
+            <th>Pre-Conditions</th>      
+            <th>Post-Conditions</th>
+          </tr>
+        </thead>
+
+        <tbody>    
+          
+          <tr>    
+            <td>/api/v1/user</td>
+            <td>Returns list of all users</td>
+            <td>user</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>Login and requires administration privileges.</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/user/view</td>
+            <td>Returns user details</td>
+            <td>user/view</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/user/create</td>
+            <td>Creates user record</td>
+            <td>user/create</td>
+            <td>PUT</td>
+            <td>None</td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/user/update</td>
+            <td>Creates user record</td>
+            <td>user/update</td>
+            <td>POST</td>
+            <td>None</td>
+            <td>Login, post body contains updated version json object to be updated.</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>user/delete/&lt;uuid&gt;</td>
+            <td>Deletes user record</td>
+            <td>user/delete</td>
+            <td>DELETE</td>
+            <td></td>
+            <td>Login, administration privileges. No protection for users who delete their own account.</td>
+            <td>Record identified with &lt;uuid&gt; will be permanantly deleted.</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/user/urls</td>
+            <td>Returns login/logout urls for current user</td>
+            <td>user/urls</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>Login</td>
+            <td></td>
+          </tr>
+
+
+        </tbody>
+
+      </table>
+    </div>
+
+
+
+
+
+
+
+    <div>
+      <h3><a name='product'>Product</a></h3>
+      <table class='pure-table pure-table-bordered'>
+        
+        <thead>
+
+          <tr>    
+            <th>Entry Point</th>
+            <th>Description</th>
+            <th>URI</th>
+            <th>METHOD</th>
+            <td>Parameters</td>
+            <th>Pre-Conditions</th>
+            <th>Post-Conditions</th>      
+          </tr>
+        </thead>
+
+        <tbody>    
+          
+          <tr>    
+            <td>/api/v1/product</td>
+            <td>Returns list of all objects</td>
+            <td>product</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>None</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/products/view</td>
+            <td>Returns single product details</td>
+            <td>products/view</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>None</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/products/create</td>
+            <td>Creates product record</td>
+            <td>products/create</td>
+            <td>POST</td>
+            <td>
+              <p>Body contains json object of new record.</p>
+<pre>
+  {
+    "product_id": 2,
+    "name": "Dynamite",
+    "manufacturer_id": 1,
+    "price": 5,
+    "qty": 50000,
+  }
+</pre>
+            </td>
+            <td>Login, Administration privilege</td>
+            <td></td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/products/update/&lt;uuid&gt;</td>
+            <td>Updates product record</td>
+            <td>products/update</td>
+            <td>PUT</td>
+            <td>
+              <p>
+                Body contains json object of product update.
+              </p>
+            </td>
+            <td>Login, post body contains updated version json object to be updated.</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/products/delete/&lt;uuid&gt;</td>
+            <td>Deletes products record</td>
+            <td>products/delete</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>Login, administration privileges.</td>
+            <td>Record identified with &lt;uuid&gt; will be permanantly deleted.</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+    </div>
+
+
+
+    <div>
+      <h3><a name='manufacture'>Manufacturer<a></h3>
+      <table class='pure-table pure-table-bordered'>
+        
+        <thead>
+
+          <tr>    
+            <th>Entry Point</th>
+            <th>Description</th>
+            <th>URI</th>
+            <th>METHOD</th>
+            <td>Parameters</td>
+            <th>Pre-Conditions</th>
+            <th>Post-Conditions</th>      
+          </tr>
+        </thead>
+
+        <tbody>    
+          
+          <tr>    
+            <td>/api/v1/manufacturer</td>
+            <td>Returns list of all objects</td>
+            <td>product</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>None</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/manufacturer/view/&lt;uuid&gt;</td>
+            <td>Returns single object details</td>
+            <td>manufacturer/view</td>
+            <td>GET</td>
+            <td>&lt;uuid&gt; of object to view</td>
+            <td>None</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/manufacturer/create</td>
+            <td>Creates single record</td>
+            <td>manufacturer/create</td>
+            <td>POST</td>
+            <td>
+              <p>Body contains json object of new record.</p>
+<pre>
+{
+  "email": "janebloggs@example.com",
+  "business_name": "ACME Corp, Ireland",
+  "url": "http://example.com",
+  "phone": "1234567890",
+  "manufacturer_id": 1
+}
+</pre>
+            </td>
+            <td>Login, Administration privilege</td>
+            <td></td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/manufacturer/update/&lt;uuid&gt;</td>
+            <td>Updates product record</td>
+            <td>manufacturer/update</td>
+            <td>PUT</td>
+            <td>
+              <p>
+                post body contains updated version json object to be updated.
+              </p>
+            </td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/manufacturer/delete/&lt;uuid&gt;</td>
+            <td>Deletes products record</td>
+            <td>manufacturer/delete</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>Login, administration privileges.</td>
+            <td>Record identified with &lt;uuid&gt; will be permanantly deleted.</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+    </div>
+
+
+
+
+
+    <div>
+      <h3><a name='cart'>Cart</a></h3>
+      <table class='pure-table pure-table-bordered'>
+        
+        <thead>
+
+          <tr>    
+            <th>Entry Point</th>
+            <th>Description</th>
+            <th>URI</th>
+            <th>METHOD</th>
+            <td>Parameters</td>
+            <th>Pre-Conditions</th>
+            <th>Post-Conditions</th>      
+          </tr>
+        </thead>
+
+        <tbody>    
+          
+          <tr>    
+            <td>/api/v1/cart</td>
+            <td>Returns list of all objects</td>
+            <td>cart</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>None</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/cart/view</td>
+            <td>Returns cart object for current user</td>
+            <td>cart/view</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/cart/create</td>
+            <td>Creates single record</td>
+            <td>cart/create</td>
+            <td>POST</td>
+            <td>
+              <p>Body contains json object of new record.</p>
+<pre>
+{
+  "cart_total": 500,
+  "cart_items":
+  [
+      {
+          "price": 5,
+          "manufacturer_id": 1,
+          "product_id": 2,
+          "qty": 100,
+          "name": "Dynamite"
+      }
+  ]
+}
+</pre>
+            </td>
+            <td>Login</td>
+            <td></td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/cart/update</td>
+            <td>Updates cart record</td>
+            <td>cart/update</td>
+            <td>PUT</td>
+            <td>
+              <p>
+                post body contains updated version json object to be updated.
+              </p>
+            </td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/cart/delete</td>
+            <td>Deletes cart record</td>
+            <td>cart/delete</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>Login</td>
+            <td>Record will be permanantly deleted.</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+    </div>
+
+
+    <div>
+      <h3><a name='order'>Orders</a></h3>
+      <table class='pure-table pure-table-bordered'>
+        
+        <thead>
+
+          <tr>    
+            <th>Entry Point</th>
+            <th>Description</th>
+            <th>URI</th>
+            <th>METHOD</th>
+            <td>Parameters</td>
+            <th>Pre-Conditions</th>
+            <th>Post-Conditions</th>      
+          </tr>
+        </thead>
+
+        <tbody>    
+          
+          <tr>    
+            <td>/api/v1/orders</td>
+            <td>Returns list of all order objects for user</td>
+            <td>orders</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/orders/view/&lt;uuid&gt;</td>
+            <td>Returns orders object for object identified by &lt;uuid&gt;</td>
+            <td>orders/view</td>
+            <td>GET</td>
+            <td>&lt;uuid&gt; required</td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/orders/list</td>
+            <td>Returns administration list of orders objects for all users</td>
+            <td>orders/list</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>Login, Administration</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/orders/create</td>
+            <td>Creates single record</td>
+            <td>orders/create</td>
+            <td>POST</td>
+            <td>
+              <p>Body contains json object of new record.</p>
+<pre>
+{
+  "updated": "04-08-2015 00:45",
+  "cart":
+  {
+      "cart_total": 500,
+      "cart_items":
+      [
+          {
+              "manufacturer_id": 1,
+              "price": 5,
+              "name": "Dynamite",
+              "qty": 100,
+              "product_id": 2
+          }
+      ]
+  },
+  "created": "04-08-2015 00:45",
+  "user_id": "185804764220139124118"
+}
+</pre>
+            </td>
+            <td>Login</td>
+            <td></td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/orders/update/&lt;uuid&gt;</td>
+            <td>Updates orders record identified by &lt;uuid&gt;</td>
+            <td>orders/update</td>
+            <td>PUT</td>
+            <td>
+              <p>
+                post body contains updated version json object to be updated.
+              </p>
+            </td>
+            <td>Login</td>
+            <td>None</td>
+          </tr>
+
+          <tr>    
+            <td>/api/v1/orders/delete/&lt;uuid&gt;</td>
+            <td>Deletes orders record identified by &lt;uuid&gt;</td>
+            <td>orders/delete</td>
+            <td>DELETE</td>
+            <td>&lt;uuid&gt; required</td>
+            <td>Login</td>
+            <td>Record will be permanantly deleted.</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+    </div>
+
+
+
+
+  </body>
+</html>
