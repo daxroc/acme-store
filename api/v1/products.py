@@ -55,7 +55,7 @@ class ViewHandler(webapp2.RequestHandler):
         'product_id':       entity.product_id,
         'manufacturer_id':  entity.manufacturer_id,
         'name':             entity.name,
-        'cost':             entity.cost,
+        'price':            entity.price,
         'qty':              entity.qty
       }
 
