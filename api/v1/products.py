@@ -55,6 +55,7 @@ class ViewHandler(webapp2.RequestHandler):
         'product_id':       entity.product_id,
         'manufacturer_id':  entity.manufacturer_id,
         'name':             entity.name,
+        'cost':             entity.cost,
         'qty':              entity.qty
       }
 
@@ -90,6 +91,7 @@ class CreateHandler(webapp2.RequestHandler):
         product_id=jdata['product_id'],
         manufacturer_id=jdata['manufacturer_id'],
         name=jdata['name'],
+        price=jdata['price'],
         qty=jdata['qty'] or 0
       )
       
@@ -137,9 +139,9 @@ class UpdateHandler(webapp2.RequestHandler):
       
       entity.product_id           = jdata['product_id']
       entity.manufacturer_id      = jdata['manufacturer_id']
-      entity.name = jdata['name'] = jdata['name']
-      entity.qty = jdata['name']  = jdata['qty']
-      
+      entity.name                 = jdata['name']
+      entity.qty                  = jdata['qty']
+      entity.price                = jdata['price']
       result = entity.put()
 
       if result:

@@ -2,13 +2,31 @@ import logging as log
 import datetime
 
 from google.appengine.ext import ndb
+from google.appengine.api.mail import check_email_valid
+from google.appengine.api.mail import InvalidEmailError
+
+class UserModel(ndb.Model):
+  #id  is user_id
+  name      = ndb.StringProperty()
+  address   = ndb.StringProperty()
+  email     = ndb.StringProperty()
+
+  def list(cls):
+    return cls.query()
+
+  def has_valid_email(self):
+    try:
+      check_email_valid(self.email, None)
+      return True
+    except InvalidEmailError, e:
+      return False
 
 class ProductModel(ndb.Model):
   product_id        = ndb.IntegerProperty()
   manufacturer_id   = ndb.IntegerProperty()
   name              = ndb.StringProperty()
   qty               = ndb.IntegerProperty()
-  cost              = ndb.FloatProperty()
+  price             = ndb.FloatProperty()
 
   def list(cls):
     return cls.query()
@@ -27,6 +45,8 @@ class ManufacturerModel(ndb.Model):
 
 class ItemModel(ndb.Model):
   product_id        = ndb.IntegerProperty()
+  manufacturer_id   = ndb.IntegerProperty()
+  name              = ndb.StringProperty()
   qty               = ndb.IntegerProperty()
   price             = ndb.FloatProperty()
 

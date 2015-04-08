@@ -1,0 +1,126 @@
+handlers:
+
+#
+- url: /api/v1/user
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /api/v1/user/view
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/user/create
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/user/update
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/user/delete
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/user/urls
+  script: api.v1.router.route
+
+#
+- url: /api/v1/orders
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/orders/list
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /api/v1/orders/view/(.*)
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/orders/create
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/orders/update/(.*)
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/orders/delete/(.*)
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+#
+- url: /api/v1/cart
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /api/v1/cart/view
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/cart/create
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/cart/update
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+- url: /api/v1/cart/delete
+  script: api.v1.router.route
+  login: required
+  auth_fail_action: unauthorized
+
+
+#
+- url: /api/v1/manufacturer/create
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /api/v1/manufacturer/update/(.*)
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /api/v1/manufacturer/delete/(.*)
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+
+#
+- url: /api/v1/products/create
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /api/v1/products/update/(.*)
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /api/v1/products/delete/(.*)
+  script: api.v1.router.route
+  login: admin
+  auth_fail_action: unauthorized
+
+
+- url: /api/v1/.*
+  script: api.v1.router.route
+

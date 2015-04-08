@@ -1,0 +1,53 @@
+<h2>API Documentation</h2>
+
+<div>
+  <table>
+    
+    <thead>
+
+      <tr>    
+        <th>Entry Point</th>
+        <th>Description</th>
+        <th>URI</th>
+        <th>HTTP Verb</th>
+        <th>Parameters</th>
+        <th>Preconditions</th>      
+      </tr>
+    </thead>
+
+    <tbody>    
+      
+      <tr>
+        <td>Products/</td>
+        <td>Returns json object of products list</td>
+        <td>api/v1/products/</td>
+        <td>GET</td>
+        <td>None</td>
+        <td>None</td>
+      </tr>
+    
+      <tr>
+        <td>Products/view/<id></td>
+        <td>Returns json object of a single product</td>
+        <td>api/v1/products/view/<id></td>
+        <td>GET</td>
+        <td>Requires id parameter appended to the URI</td>
+        <td>None</td>
+      </tr>
+    
+    
+      <tr>
+        <td>Products/create</td>
+        <td>Creates a ProductModel entity from request body json object</td>
+        <td>api/v1/products/</td>
+        <td>PUT</td>
+        <td>request body must contain json object of ProductModel : Example: <pre>{}</pre></td>
+        <td>Authentication</td>
+      </tr>
+    
+    
+
+    </tbody>
+
+  </table>
+</div>

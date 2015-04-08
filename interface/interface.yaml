@@ -1,0 +1,9 @@
+handlers:
+
+- url: /assets/(.*)
+  static_files: interface/assets/\1
+  upload: interface/assets/
+
+- url: /(.*)
+  static_files: interface/static/index.html
+  upload: interface/static/index.html

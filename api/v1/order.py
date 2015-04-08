@@ -9,17 +9,14 @@ from models import OrderModel
 from models import CartModel
 
 
-class ListHandler(webapp2.RequestHandler):
+class AdminListHandler(webapp2.RequestHandler):
 
   def get(self):
     try:
 
       self.response.headers['Content-Type'] = 'text/json'
 
-      user = users.get_current_user()
-      user_id = user.user_id()
-
-      entities = OrderModel(user_id=user_id).list()
+      entities = OrderModel().list()
       
       response = {"success": True, "entities":{}}
 
@@ -37,6 +34,36 @@ class ListHandler(webapp2.RequestHandler):
           "success": False, 
           "message": "ViewHandler Exception: " + e.message
       }))
+
+class ListHandler(webapp2.RequestHandler):
+
+  def get(self):
+    try:
+
+      self.response.headers['Content-Type'] = 'text/json'
+
+      user = users.get_current_user()
+      user_id = user.user_id()
+
+      entities = OrderModel.query( OrderModel.user_id == user_id )
+      
+      response = {"success": True, "entities":{}}
+
+      for entity in entities.fetch():
+        key_id = entity.key.id()
+        response['entities'][key_id] = (entity.to_dict())
+
+      self.response.write(json.dumps(response))
+
+    except Exception, e: 
+      # Should Log to console - exception message
+      log.debug(e)
+      self.response.write(
+        json.dumps({
+          "success": False, 
+          "message": "ViewHandler Exception: " + e.message
+      }))
+
 
 
 class ViewHandler(webapp2.RequestHandler):
