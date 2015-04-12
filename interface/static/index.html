@@ -36,7 +36,7 @@
 <body ng-app='AcmeStore' ng-controller='UserCtrl as user'>
 <div class="container">
   <div class="row clearfix">
-    <div class="col-md-8 column" ng-controller="TabCtrl as tab">
+    <div class="col-md-12 column" ng-controller="TabCtrl as tab">
       <ul class="nav nav-tabs">
         <li ng-class="{ active: tab.isSet(1) }">
           <a href="#" ng-click="tab.setTab(1)">Products</a>
@@ -92,8 +92,8 @@
         <p>
           Imagine some really really witty content here, great well done. 
         </p>
-        <p>
-          <a class="btn btn-primary btn-large" href="#">Learn more</a>
+        <p ng-controller="SeedCtrl as seed">
+          <a class="btn btn-primary btn-large" href="#" ng-click="populate()">Seed Database - Click once</a>
         </p>
       </div>
 
@@ -567,50 +567,6 @@
 
     </div><!-- End content -->
 
-
-
-    <!-- Side Bar -->
-    <div class="col-md-4 column">
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          <h3 class="panel-title">
-            Panel title
-          </h3>
-        </div>
-        <div class="panel-body">
-          Panel content
-        </div>
-        <div class="panel-footer">
-          Panel footer
-        </div>
-      </div>
-      <div class="panel panel-warning">
-        <div class="panel-heading">
-          <h3 class="panel-title">
-            Panel title
-          </h3>
-        </div>
-        <div class="panel-body">
-          Panel content
-        </div>
-        <div class="panel-footer">
-          Panel footer
-        </div>
-      </div>
-      <div class="panel panel-danger">
-        <div class="panel-heading">
-          <h3 class="panel-title">
-            Panel title
-          </h3>
-        </div>
-        <div class="panel-body">
-          Panel content
-        </div>
-        <div class="panel-footer">
-          Panel footer
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 </body>

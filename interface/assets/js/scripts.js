@@ -64,11 +64,16 @@ app.service('OrderService', function($http, $log, $q){
         });
   };
 
-  this.createOrder = function(cart){
+  this.createOrder = function(cart, cart_srvc){
+    var CartSrvc = cart_srvc;
     return $http.post(apiEntry('orders/create'),cart)
-      .then(function(response){
+      .success(function(response){
+        console.log('Done', CartSrvc);
         srvc.getAllUserOrders();
         srvc.getAdminOrders();
+        CartSrvc.empty();
+        CartSrvc.update();
+        location.reload();
       });
   };
 
@@ -213,6 +218,7 @@ app.service('CartService', function($http, $log, $q){
         console.log("Item already in cart");
       }else{
         srvc.cart.cart_items.push(item);
+        srvc.update(); // Save cart
       }
     }
 
@@ -259,9 +265,7 @@ app.controller('CartCtrl', function($scope, CartService, OrderService, UserServi
   $scope.createOrder = function(cart){
     // Save, Create, Empty
     this.cart.CartService.update(); 
-    this.cart.OrderService.createOrder(angular.copy(this.cart.CartService.cart));
-    // this.cart.CartService.empty();
-    // this.cart.CartService.update();
+    this.cart.OrderService.createOrder(angular.copy(this.cart.CartService.cart), this.cart.CartService);
   };
 
   $scope.delete = function(item) {
@@ -374,6 +378,57 @@ app.controller("ManufactureCtrl",function($scope, ManufactureService){
 
   $scope.delete = function(uuid){
     this.manufacture.ManufacturerService.delete(uuid);
+  };
+
+});
+
+
+app.controller("SeedCtrl", function($scope, ManufactureService, ProductService){
+
+  var P = ProductService;
+  var M = ManufactureService;
+  
+  var seed_products = [
+    {
+        "manufacturer_id": 1,
+        "qty": 300,
+        "price": 100,
+        "product_id": 1,
+        "name": "Product One"
+    },
+    {
+        "manufacturer_id": 2,
+        "qty": 120,
+        "price": 200,
+        "product_id": 2,
+        "name": "Product Two"
+    }
+  ];
+
+
+  var seed_manufactures = [
+    {
+      "email": "example@example.com",
+      "url": "http://acme.example.com",
+      "phone": "+353 123MYANVIL",
+      "manufacturer_id": 1,
+      "business_name": "ACME"
+    },
+    {
+      "email": "example2@example.com",
+      "url": "http://acme.example.com",
+      "phone": "+353 123MYANVIL",
+      "manufacturer_id": 2,
+      "business_name": "ACME UK Limited"
+    }
+  ];
+
+
+  $scope.populate = function(){
+    
+    $.each(seed_manufactures, function(i, d){ M.save(d); });
+    $.each(seed_products, function(i,d){ P.product = d; P.save(); });
+    location.reload();
   };
 
 });
